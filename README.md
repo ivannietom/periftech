@@ -13,8 +13,6 @@ Vamos a crear una web de venta de productos informáticos. Tendrá 2 partes:
 - **Pedido:**  tendrá el coste de los productos seleccionados por el cliente, además del coste de envío.
 
 ## Funcionamiento del servicio interno
-- Gestión de usuarios
-- Los administradores pueden añadir/editar/eliminar productos y categorías
 - Envío de correo al cliente con la confirmación del pedido y la información del mismo
 
 
