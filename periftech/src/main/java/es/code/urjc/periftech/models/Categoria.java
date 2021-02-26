@@ -1,9 +1,13 @@
 package es.code.urjc.periftech.models;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Categoria {
@@ -12,11 +16,12 @@ public class Categoria {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String nombre;
-	private Producto productos;
+	@OneToMany(mappedBy="categoria",cascade=CascadeType.ALL)
+	private List<Producto> productos;
 	
-	public Categoria() {}
+	protected Categoria() {}
 
-	public Categoria(String nombre, Producto productos) {
+	public Categoria(String nombre, List<Producto> productos) {
 		super();
 		this.nombre = nombre;
 		this.productos = productos;
@@ -38,11 +43,11 @@ public class Categoria {
 		this.nombre = nombre;
 	}
 
-	public Producto getProductos() {
+	public List<Producto> getProductos() {
 		return productos;
 	}
 
-	public void setProductos(Producto productos) {
+	public void setProductos(List<Producto> productos) {
 		this.productos = productos;
 	}
 

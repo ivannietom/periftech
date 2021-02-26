@@ -1,38 +1,37 @@
 package es.code.urjc.periftech.models;
 
-import java.util.Arrays;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Pedido {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private int id;
+	@OneToOne(mappedBy="pedidoCliente")
 	private Cliente cliente;
-	private Producto[] productos;
+	@OneToOne(mappedBy="pedidoCarrito")
+	private Cart carroPedido;
 	private float coste;
-	private String fechaEntrega;
 	
-	public Pedido() {}
+	protected Pedido() {}
 
-	public Pedido(Cliente cliente, Producto[] productos, float coste, String fechaEntrega) {
+	public Pedido(Cliente cliente, Cart carroPedido, float coste) {
 		super();
 		this.cliente = cliente;
-		this.productos = productos;
+		this.carroPedido = carroPedido;
 		this.coste = coste;
-		this.fechaEntrega = fechaEntrega;
 	}
 
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -44,12 +43,12 @@ public class Pedido {
 		this.cliente = cliente;
 	}
 
-	public Producto[] getProductos() {
-		return productos;
+	public Cart getCarroPedido() {
+		return carroPedido;
 	}
 
-	public void setProductos(Producto[] productos) {
-		this.productos = productos;
+	public void setCarroPedido(Cart carroPedido) {
+		this.carroPedido = carroPedido;
 	}
 
 	public float getCoste() {
@@ -60,17 +59,9 @@ public class Pedido {
 		this.coste = coste;
 	}
 
-	public String getFechaEntrega() {
-		return fechaEntrega;
-	}
-
-	public void setFechaEntrega(String fechaEntrega) {
-		this.fechaEntrega = fechaEntrega;
-	}
-
 	@Override
 	public String toString() {
-		return "Pedido [id=" + id + ", cliente=" + cliente + ", productos=" + Arrays.toString(productos) + ", coste="
-				+ coste + ", fechaEntrega=" + fechaEntrega + "]";
+		return "Pedido [id=" + id + ", cliente=" + cliente + ", carritoPedido=" + carroPedido + ", coste=" + coste
+				+ "]";
 	}
 }

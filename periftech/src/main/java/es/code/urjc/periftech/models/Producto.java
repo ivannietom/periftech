@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Producto {
@@ -13,18 +14,20 @@ public class Producto {
 	private Long id;
 	private String nombre;
 	private float precio;
+	@ManyToOne
 	private Categoria categoria;
-	private String imagen;
+	@ManyToOne
+	private Cart carroProducto;
 	private int stock;
 	
-	public Producto() {}
+	protected Producto() {}
 
-	public Producto(String nombre, float precio, Categoria categoria, String imagen, int stock) {
+	public Producto(String nombre, float precio, Categoria categoria, Cart carroProducto, int stock) {
 		super();
 		this.nombre = nombre;
 		this.precio = precio;
 		this.categoria = categoria;
-		this.imagen = imagen;
+		this.carroProducto = carroProducto;
 		this.stock = stock;
 	}
 
@@ -60,12 +63,12 @@ public class Producto {
 		this.categoria = categoria;
 	}
 
-	public String getImagen() {
-		return imagen;
+	public Cart getCarroProducto() {
+		return carroProducto;
 	}
 
-	public void setImagen(String imagen) {
-		this.imagen = imagen;
+	public void setCarroProducto(Cart carroProducto) {
+		this.carroProducto = carroProducto;
 	}
 
 	public int getStock() {
@@ -79,6 +82,6 @@ public class Producto {
 	@Override
 	public String toString() {
 		return "Producto [id=" + id + ", nombre=" + nombre + ", precio=" + precio + ", categoria=" + categoria
-				+ ", imagen=" + imagen + ", stock=" + stock + "]";
+				+ ", carroProducto=" + carroProducto + ", stock=" + stock + "]";
 	}
 }
