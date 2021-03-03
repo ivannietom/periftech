@@ -15,7 +15,8 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 
 import javax.annotation.PostConstruct;
 
-import es.code.urjc.periftech.models.Cliente;
+import es.code.urjc.periftech.models.*;
+import es.code.urjc.periftech.repositories.CartRepository;
 import es.code.urjc.periftech.repositories.ClienteRepository;
 
 @Controller
@@ -23,10 +24,18 @@ public class RouteController {
 	
 	@Autowired
 	private ClienteRepository clientes;
+	@Autowired
+	private CartRepository carros;
 	
 	@PostConstruct
 	public void init() {
-		clientes.save(new Cliente("Manu", "Manu", "Manu@gmail.com", "contra", "calle1", null, null));
+		Cliente a = new Cliente("Manu", "Manu", "Manu@gmail.com", "contra", "calle1", null, null);
+		Cart b = new Cart(a,null,4.3f,null);
+		Cart c = new Cart(null,null,4.3f,null);
+		a.setCarroCliente(b);
+		clientes.save(a);
+		carros.save(b);
+		carros.save(c);
 	}
 	
 	@GetMapping("/")
@@ -60,13 +69,33 @@ public class RouteController {
 		return "producto-busqueda";
 	}
 	
-	@RequestMapping("/registro")
-	public String Registro(Model model, @RequestParam String nombreCompleto, 
-			@RequestParam String email, 
+	@RequestMapping("/esLoginCorrecto")
+	public String comprobarLogin(Model model,
+			@RequestParam String nombreUsuario,
 			@RequestParam String password) {
-		model.addAttribute("nombre", nombreCompleto);
+		
+		boolean existe = false;
+		Cliente c = clientes.findByNombreUsuario(nombreUsuario);
+		if(c != null && c.getPassword().equals(password)) existe = true;
+		model.addAttribute("esLoginCorrecto",existe);
+		return "comprobar-login";
+	}
+	
+	@RequestMapping("/registro")
+	public String Registro(Model model, @RequestParam String nombreCompleto,
+			@RequestParam String nombreUsuario,  
+			@RequestParam String email, 
+			@RequestParam String password,
+			@RequestParam String direccion) {
+				
+		model.addAttribute("nombreCompleto", nombreCompleto);
+		model.addAttribute("nombreUsuario", nombreUsuario);
 		model.addAttribute("email", email);
 		model.addAttribute("password", password);
+		model.addAttribute("direccion", direccion);
+		
+		Cliente c1 = new Cliente(nombreCompleto,nombreUsuario,email,password,direccion,null,null);
+		clientes.save(c1);
 		return "registro-correcto";
 	}
 	
