@@ -15,7 +15,7 @@ public class Categoria {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	private String nombre;
+	private String nombreCategoria;
 	@OneToMany(mappedBy="categoria",cascade=CascadeType.ALL)
 	private List<Producto> productos;
 	
@@ -23,7 +23,7 @@ public class Categoria {
 
 	public Categoria(String nombre, List<Producto> productos) {
 		super();
-		this.nombre = nombre;
+		this.nombreCategoria = nombre;
 		this.productos = productos;
 	}
 
@@ -36,11 +36,11 @@ public class Categoria {
 	}
 
 	public String getNombre() {
-		return nombre;
+		return nombreCategoria;
 	}
 
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		this.nombreCategoria = nombre;
 	}
 
 	public List<Producto> getProductos() {
@@ -53,6 +53,6 @@ public class Categoria {
 
 	@Override
 	public String toString() {
-		return "Categoria [id=" + id + ", nombre=" + nombre + ", productos=" + productos + "]";
+		return "Categoria [id=" + id + ", nombre=" + nombreCategoria + ", productos=" + productos + "]";
 	}
 }

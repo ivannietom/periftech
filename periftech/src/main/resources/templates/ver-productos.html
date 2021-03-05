@@ -1,0 +1,14 @@
+<html>
+<body>
+	<h1>Categor&iacute;a: {{categoria.nombreCategoria}}</h1>
+	
+	<br>
+	
+	<h3>Lista de productos disponibles: </h3>
+	{{#productos}}
+		<a href="productos/{{id}}">{{nombreProducto}}</a> <br>
+	{{/productos}}
+	
+	<a href="/categorias">Retroceder</a>
+</body>
+</html>

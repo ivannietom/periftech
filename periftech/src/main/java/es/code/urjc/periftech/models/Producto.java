@@ -12,7 +12,7 @@ public class Producto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	private String nombre;
+	private String nombreProducto;
 	private float precio;
 	@ManyToOne
 	private Categoria categoria;
@@ -24,7 +24,7 @@ public class Producto {
 
 	public Producto(String nombre, float precio, Categoria categoria, Cart carroProducto, int stock) {
 		super();
-		this.nombre = nombre;
+		this.nombreProducto = nombre;
 		this.precio = precio;
 		this.categoria = categoria;
 		this.carroProducto = carroProducto;
@@ -40,11 +40,11 @@ public class Producto {
 	}
 
 	public String getNombre() {
-		return nombre;
+		return nombreProducto;
 	}
 
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		this.nombreProducto = nombre;
 	}
 
 	public float getPrecio() {
@@ -81,7 +81,7 @@ public class Producto {
 
 	@Override
 	public String toString() {
-		return "Producto [id=" + id + ", nombre=" + nombre + ", precio=" + precio + ", categoria=" + categoria
+		return "Producto [id=" + id + ", nombre=" + nombreProducto + ", precio=" + precio + ", categoria=" + categoria
 				+ ", carroProducto=" + carroProducto + ", stock=" + stock + "]";
 	}
 }
