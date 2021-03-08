@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 
@@ -52,6 +55,7 @@ public class RouteController {
 
 	@GetMapping("/login")
 	public String Login(Model model) {
+		
 		return "login";
 	}
 
@@ -71,8 +75,28 @@ public class RouteController {
 	}
 
 	@GetMapping("/cart")
-	public String Cart(Model model) {
+	public String Cart(Model model,Pageable pageable) {
+		if(clienteService.getClienteActual().getCarroCliente() == null) {
+			List<Producto> listaProductos = new ArrayList<Producto>();
+			Cart carrito = new Cart(clienteService.getClienteActual(),listaProductos,0,null);
+			clienteService.getClienteActual().setCarroCliente(carrito);
+		    carros.save(carrito);
+		    clientes.save(clienteService.getClienteActual());
+		}else {
+		
+	
+	    Cart carritoActual = clienteService.getClienteActual().getCarroCliente();	
+		
+		Page<Producto> listaproductos = productoService.findByCarroProducto(carritoActual,pageable);
+		
+		model.addAttribute("listaproductos", listaproductos);
+		model.addAttribute("hasPrev", listaproductos.hasPrevious());
+		model.addAttribute("hasNext", listaproductos.hasNext());
+		model.addAttribute("nextPage", listaproductos.getNumber()+1);
+		model.addAttribute("prevPage", listaproductos.getNumber()-1);
+		}
 		return "cart";
+		
 	}
 
 	@GetMapping("/register")
@@ -91,12 +115,24 @@ public class RouteController {
 
 		boolean existe = false;
 		Cliente c = clientes.findByNombreUsuario(nombreUsuario);
-		if (c != null && c.getPassword().equals(password))
+		if (c != null && c.getPassword().equals(password)) {
 			existe = true;
+			clienteService.setClienteActual(c);
+		}
 		model.addAttribute("esLoginCorrecto", existe);
 		return "comprobar-login";
 	}
-
+	@RequestMapping("/categoria/producto/agregarProducto{id}")
+	public String agregarProducto(Model model, @PathVariable long id){
+		
+		Producto productoActual = productos.findById(id).orElseThrow();
+	    Cart carrito = clienteService.getClienteActual().getCarroCliente();
+	    carrito.getProductos().add(productoActual);
+	    productoActual.setCarroProducto(carrito);	    
+	    productos.save(productoActual);
+	    carros.save(carrito);
+		return "producto-agregado";
+	}
 	@RequestMapping("/registro")
 	public String Registro(Model model, @RequestParam String nombreCompleto, @RequestParam String nombreUsuario,
 			@RequestParam String email, @RequestParam String password, @RequestParam String direccion) {
@@ -111,7 +147,6 @@ public class RouteController {
 		clientes.save(cliente);
 		return "registro-correcto";
 	}
-	
 	@GetMapping("/categoria/{id}")
 	public String mostrarCategoria(Model model, @PathVariable long id, Pageable pageable) {
 
@@ -119,7 +154,7 @@ public class RouteController {
 
 		model.addAttribute("categoria", categoria);
 		
-		Page<Producto> productos = productoService.findAll(pageable);
+		Page<Producto> productos = productoService.findBycategoria(categoria,pageable);
 		
 		model.addAttribute("productos", productos);
 		model.addAttribute("hasPrev", productos.hasPrevious());
@@ -129,4 +164,20 @@ public class RouteController {
 
 		return "ver-productos";
 	}
+	@GetMapping("/categoria/producto/{id}")
+    public String mostrarProducto(Model model, @PathVariable long id, Pageable pageable) {
+
+        Producto producto = productoService.findById(id).orElseThrow();
+
+        model.addAttribute("producto", producto);
+
+        /*Page<Producto> productos = productoService.findAll(pageable);
+        model.addAttribute("productos", productos);
+        model.addAttribute("hasPrev", productos.hasPrevious());
+        model.addAttribute("hasNext", productos.hasNext());
+        model.addAttribute("nextPage", productos.getNumber()+1);
+        model.addAttribute("prevPage", productos.getNumber()-1);*/
+
+        return "ver-producto";
+    }
 }

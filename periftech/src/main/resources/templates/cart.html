@@ -1,5 +1,12 @@
 {{>header}}
 
 <p> Carro compra </p>
+    <h3>Lista de productos disponibles: </h3>
+    {{#listaproductos}}
+        <p> {{nombreProducto}}</p>
+    {{/listaproductos}}
 
+    {{^listaproductos}}
+        <p> Carro vacio</p>
+    {{/listaproductos}}
 {{>footer}}

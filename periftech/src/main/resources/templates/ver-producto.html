@@ -1,0 +1,27 @@
+{{>header}}
+
+
+    {{#producto}}
+        <h1>Producto: {{nombreProducto}}</h1>
+        <p> Nombre del producto: {{nombreProducto}} </p>
+        <p> Precio del producto: {{precio}} &euro; </p>
+        <p> Stock del producto: {{stock}} unidades</p>
+
+       <form method="post" action="agregarProducto{{id}}">
+        <input type="submit" value="Agregar Producto">
+    </form>
+
+
+    {{/producto}}
+
+    <br>
+
+    <a href="/categorias">Volver a categor&iacute;as</a>
+
+    <br>
+
+    {{^producto}}
+        <p>No hay productos</p>
+    {{/producto}}
+
+{{>footer}}

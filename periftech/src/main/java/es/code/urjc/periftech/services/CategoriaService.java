@@ -15,30 +15,30 @@ import es.code.urjc.periftech.repositories.CategoriaRepository;
 import es.code.urjc.periftech.models.Categoria;
 @Service
 public class CategoriaService {
-	@Autowired
-	private CategoriaRepository categorias;
+    @Autowired
+    private CategoriaRepository categorias;
 
-	@PostConstruct
-	public void init() {
-		save(new Categoria("Teclados", null));
-		save(new Categoria("Ratones", null));
-		save(new Categoria("Pantallas", null));
-	}
+    @PostConstruct
+    public void init() {
+        save(new Categoria("Teclados", null));
+        save(new Categoria("Ratones", null));
+        save(new Categoria("Pantallas", null));
+    }
 
-	public Collection<Categoria> findAll() {
-		return categorias.findAll();
-	}
-	
-	public Page<Categoria> findAll(Pageable pageable) {
-		return categorias.findAll(pageable);
-	}
+    public Collection<Categoria> findAll() {
+        return categorias.findAll();
+    }
 
-	public Optional<Categoria> findById(long id) {
-		return categorias.findById(id);
-	}
+    public Page<Categoria> findAll(Pageable pageable) {
+        return categorias.findAll(pageable);
+    }
 
-	public void save(Categoria categoria) {
-		categorias.save(categoria);
-	}
+    public Optional<Categoria> findById(long id) {
+        return categorias.findById(id);
+    }
+
+    public void save(Categoria categoria) {
+        categorias.save(categoria);
+    }
 }
 
