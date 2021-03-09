@@ -13,32 +13,38 @@ import org.springframework.stereotype.Service;
 import es.code.urjc.periftech.repositories.CategoriaRepository;
 
 import es.code.urjc.periftech.models.Categoria;
+
 @Service
 public class CategoriaService {
-    @Autowired
-    private CategoriaRepository categorias;
+	@Autowired
+	private CategoriaRepository categorias;
 
-    @PostConstruct
-    public void init() {
-        save(new Categoria("Teclados", null));
-        save(new Categoria("Ratones", null));
-        save(new Categoria("Pantallas", null));
-    }
+	@PostConstruct
+	public void init() {
+		save(new Categoria("Teclados", null));
+		save(new Categoria("Ratones", null));
+		save(new Categoria("Pantallas", null));
+		save(new Categoria("Premium", null));
+	}
 
-    public Collection<Categoria> findAll() {
-        return categorias.findAll();
-    }
+	public Collection<Categoria> findAll() {
+		return categorias.findAll();
+	}
+	
+	public Page<Categoria> findAll(Pageable pageable) {
+		return categorias.findAll(pageable);
+	}
+	
+	public Categoria findByNombreCategoria(String nombreCategoria){
+		return categorias.findByNombreCategoria(nombreCategoria);
+	}
 
-    public Page<Categoria> findAll(Pageable pageable) {
-        return categorias.findAll(pageable);
-    }
+	public Optional<Categoria> findById(long id) {
+		return categorias.findById(id);
+	}
 
-    public Optional<Categoria> findById(long id) {
-        return categorias.findById(id);
-    }
-
-    public void save(Categoria categoria) {
-        categorias.save(categoria);
-    }
+	public void save(Categoria categoria) {
+		categorias.save(categoria);
+	}
 }
 

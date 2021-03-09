@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpSession;
 
 import es.code.urjc.periftech.models.*;
 import es.code.urjc.periftech.repositories.*;
@@ -22,16 +23,17 @@ import es.code.urjc.periftech.services.*;
 
 @Controller
 public class RouteController {
-
-	//Repositorios
+	// Repositorios
 	@Autowired
 	private ClienteRepository clientes;
 	@Autowired
 	private CartRepository carros;
 	@Autowired
 	private ProductoRepository productos;
-	
-	//Servicios
+	@Autowired
+	private PedidoRepository pedidos;
+
+	// Servicios
 	@Autowired
 	private CategoriaService categoriaService;
 	@Autowired
@@ -50,53 +52,92 @@ public class RouteController {
 
 	@GetMapping("/")
 	public String Index(Model model) {
+
 		return "index";
 	}
 
-	@GetMapping("/login")
-	public String Login(Model model) {
-		
-		return "login";
+	// CART
+	
+	@GetMapping("/cart")
+	public String Cart(Model model, Pageable pageable) {
+		float totalCarro = 0;
+		Cart carritoActual = clienteService.getClienteActual().getCarroCliente();
+
+		Page<Producto> listaProductos = productoService.findByCarroProducto(carritoActual, pageable);
+		totalCarro = carritoActual.getCoste();
+
+		model.addAttribute("listaProductos", listaProductos);
+		model.addAttribute("hasPrev", listaProductos.hasPrevious());
+		model.addAttribute("hasNext", listaProductos.hasNext());
+		model.addAttribute("nextPage", listaProductos.getNumber() + 1);
+		model.addAttribute("prevPage", listaProductos.getNumber() - 1);
+		model.addAttribute("totalCarro", totalCarro);
+
+		return "cart";
 	}
 
+	// CATEGORIA
+
 	@GetMapping("/categorias")
-	public String mostrarCategorias(Model model, HttpSession session, Pageable pageable) {
+	public String mostrarCategorias(Model model, Pageable pageable) {
 
 		Page<Categoria> categorias = categoriaService.findAll(pageable);
-		
+
 		model.addAttribute("categorias", categorias);
 		model.addAttribute("hasPrev", categorias.hasPrevious());
 		model.addAttribute("hasNext", categorias.hasNext());
-		model.addAttribute("nextPage", categorias.getNumber()+1);
-		model.addAttribute("prevPage", categorias.getNumber()-1);		
-		
-		model.addAttribute("welcome", session.isNew());
+		model.addAttribute("nextPage", categorias.getNumber() + 1);
+		model.addAttribute("prevPage", categorias.getNumber() - 1);
+
 		return "ver-categorias";
 	}
 
-	@GetMapping("/cart")
-	public String Cart(Model model,Pageable pageable) {
-		if(clienteService.getClienteActual().getCarroCliente() == null) {
-			List<Producto> listaProductos = new ArrayList<Producto>();
-			Cart carrito = new Cart(clienteService.getClienteActual(),listaProductos,0,null);
-			clienteService.getClienteActual().setCarroCliente(carrito);
-		    carros.save(carrito);
-		    clientes.save(clienteService.getClienteActual());
-		}else {
+	@GetMapping("/nueva-categoria")
+	public String nuevaCategoria(Model model, Pageable pageable) {
+		Page<Categoria> categoriasActuales = categoriaService.findAll(pageable);
+		model.addAttribute("categoriasActuales", categoriasActuales);
 		
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
+		
+		return "nueva-categoria";
+	}
+
+	@RequestMapping("/agregarCategoria")
+	public String agregarCategoria(Model model, @RequestParam String nombreCategoria) {
+		categoriaService.save(new Categoria(nombreCategoria, null));
+		model.addAttribute("nombreCategoria", nombreCategoria);
+
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
+
+		return "nueva-categoria";
+	}
+
+	@GetMapping("/categoria/{id}")
+	public String mostrarCategoria(Model model, @PathVariable long id, Pageable pageable) {
+
+		Categoria categoria = categoriaService.findById(id).orElseThrow();
+
+		model.addAttribute("categoria", categoria);
+
+		Page<Producto> productos = productoService.findBycategoria(categoria, pageable);
+
+		model.addAttribute("productos", productos);
+		model.addAttribute("hasPrev", productos.hasPrevious());
+		model.addAttribute("hasNext", productos.hasNext());
+		model.addAttribute("nextPage", productos.getNumber() + 1);
+		model.addAttribute("prevPage", productos.getNumber() - 1);
+
+		return "ver-productos";
+	}
+
+	// CLIENTE
 	
-	    Cart carritoActual = clienteService.getClienteActual().getCarroCliente();	
-		
-		Page<Producto> listaproductos = productoService.findByCarroProducto(carritoActual,pageable);
-		
-		model.addAttribute("listaproductos", listaproductos);
-		model.addAttribute("hasPrev", listaproductos.hasPrevious());
-		model.addAttribute("hasNext", listaproductos.hasNext());
-		model.addAttribute("nextPage", listaproductos.getNumber()+1);
-		model.addAttribute("prevPage", listaproductos.getNumber()-1);
-		}
-		return "cart";
-		
+	@GetMapping("/login")
+	public String Login(Model model) {
+
+		return "login";
 	}
 
 	@GetMapping("/register")
@@ -104,10 +145,19 @@ public class RouteController {
 		return "register";
 	}
 
-	@RequestMapping("/busqueda")
-	public String Busqueda(Model model, @RequestParam String productoBuscado) {
-		model.addAttribute("busqueda", productoBuscado);
-		return "producto-busqueda";
+	@RequestMapping("/registro")
+	public String Registro(Model model, @RequestParam String nombreCompleto, @RequestParam String nombreUsuario,
+			@RequestParam String email, @RequestParam String password, @RequestParam String direccion) {
+
+		model.addAttribute("nombreCompleto", nombreCompleto);
+		model.addAttribute("nombreUsuario", nombreUsuario);
+		model.addAttribute("email", email);
+		model.addAttribute("password", password);
+		model.addAttribute("direccion", direccion);
+
+		Cliente cliente = new Cliente(nombreCompleto, nombreUsuario, email, password, direccion, null, null, 2);
+		clientes.save(cliente);
+		return "registro-correcto";
 	}
 
 	@RequestMapping("/esLoginCorrecto")
@@ -119,65 +169,150 @@ public class RouteController {
 			existe = true;
 			clienteService.setClienteActual(c);
 		}
+		if (existe) {
+			if (clienteService.getClienteActual().getCarroCliente() == null) {
+				List<Producto> listaProductos = new ArrayList<Producto>();
+				Cart carrito = new Cart(clienteService.getClienteActual(), listaProductos, 0, null);
+				clienteService.getClienteActual().setCarroCliente(carrito);
+				carros.save(carrito);
+				clientes.save(clienteService.getClienteActual());
+			}
+		}
+
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
+
 		model.addAttribute("esLoginCorrecto", existe);
 		return "comprobar-login";
 	}
+
+	// PEDIDO
+	
+	@GetMapping("/realizarPedido")
+	public String realizarPedido(Model model) {
+		float costeCarro = clienteService.getClienteActual().getCarroCliente().getCoste();
+
+		Random r = new Random();
+		DecimalFormat df = new DecimalFormat("#.##");
+		float costeEnvio = r.nextFloat() * 5;
+		String costeEnvioFormateado = df.format(costeEnvio);
+
+		float costePedido = 0;
+		if (clienteService.getClienteActual().getTipoCliente() == 2) {
+			costePedido = costeCarro + costeEnvio;
+			String costePedidoFormateado = df.format(costePedido);
+		} else {
+			costePedido = costeCarro;
+			String costePedidoFormateado = df.format(costePedido);
+		}
+
+		// float costePedido = costeCarro + costeEnvio;
+		String costePedidoFormateado = df.format(costePedido);
+
+		String direccionCliente = clienteService.getClienteActual().getDireccion();
+
+		model.addAttribute("costePedidoFormateado", costePedidoFormateado);
+		model.addAttribute("costeCarro", costeCarro);
+		model.addAttribute("costeEnvioFormateado", costeEnvioFormateado);
+		model.addAttribute("direccionCliente", direccionCliente);
+
+		Pedido pedidoCliente = new Pedido(clienteService.getClienteActual(),
+		clienteService.getClienteActual().getCarroCliente(), costePedido);
+		clienteService.getClienteActual().setPedidoCliente(pedidoCliente);
+		clienteService.getClienteActual().getCarroCliente().setPedidoCarrito(pedidoCliente);
+		clienteService.clienteActual.setCarroCliente(null);
+		Producto productoPremium = productoService.findByNombreProducto("Suscripción premium");
+		boolean esPremium = clienteService.getClienteActual().getCarroCliente().getProductos()
+				.contains(productoPremium);
+		if (esPremium) {
+			clienteService.getClienteActual().setTipoCliente(1);
+		}
+
+		pedidos.save(pedidoCliente);
+		clientes.save(clienteService.getClienteActual());
+		carros.save(clienteService.getClienteActual().getCarroCliente());
+		return "realizar-pedido";
+	}
+
+	// PRODUCTO
+
 	@RequestMapping("/categoria/producto/agregarProducto{id}")
-	public String agregarProducto(Model model, @PathVariable long id){
-		
+	public String agregarProductoCarro(Model model, @PathVariable long id) {
+
 		Producto productoActual = productos.findById(id).orElseThrow();
-	    Cart carrito = clienteService.getClienteActual().getCarroCliente();
-	    carrito.getProductos().add(productoActual);
-	    productoActual.setCarroProducto(carrito);	    
-	    productos.save(productoActual);
-	    carros.save(carrito);
-		return "producto-agregado";
+		Cart carrito = clienteService.getClienteActual().getCarroCliente();
+
+		carrito.getProductos().add(productoActual);
+		productoActual.setCarroProducto(carrito);
+
+		float costeCarroActual = carrito.getCoste();
+		float costeActualizado = costeCarroActual + productoActual.getPrecio();
+		carrito.setCoste(costeActualizado);
+
+		productos.save(productoActual);
+		carros.save(carrito);
+
+		return "producto-agregado-cart";
 	}
-	@RequestMapping("/registro")
-	public String Registro(Model model, @RequestParam String nombreCompleto, @RequestParam String nombreUsuario,
-			@RequestParam String email, @RequestParam String password, @RequestParam String direccion) {
 
-		model.addAttribute("nombreCompleto", nombreCompleto);
-		model.addAttribute("nombreUsuario", nombreUsuario);
-		model.addAttribute("email", email);
-		model.addAttribute("password", password);
-		model.addAttribute("direccion", direccion);
+	@GetMapping("/nuevo-producto")
+	public String nuevoProducto(Model model, Pageable pageable) {
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
 
-		Cliente cliente = new Cliente(nombreCompleto, nombreUsuario, email, password, direccion, null, null);
-		clientes.save(cliente);
-		return "registro-correcto";
-	}
-	@GetMapping("/categoria/{id}")
-	public String mostrarCategoria(Model model, @PathVariable long id, Pageable pageable) {
-
-		Categoria categoria = categoriaService.findById(id).orElseThrow();
-
-		model.addAttribute("categoria", categoria);
+		Page<Producto> productosActuales = productoService.findAll(pageable);
+		model.addAttribute("productosActuales", productosActuales);
 		
-		Page<Producto> productos = productoService.findBycategoria(categoria,pageable);
-		
-		model.addAttribute("productos", productos);
-		model.addAttribute("hasPrev", productos.hasPrevious());
-		model.addAttribute("hasNext", productos.hasNext());
-		model.addAttribute("nextPage", productos.getNumber()+1);
-		model.addAttribute("prevPage", productos.getNumber()-1);
-
-		return "ver-productos";
+		return "nuevo-producto";
 	}
+
+	@RequestMapping("/agregarProducto")
+	public String agregarProducto(Model model, @RequestParam String nombreProducto, @RequestParam String precioProducto,
+			@RequestParam String categoriaProducto) {
+		float precioProductoFloat = Float.parseFloat(precioProducto);
+		Categoria categoriaProductoAgregar = categoriaService.findByNombreCategoria(categoriaProducto);
+		productoService.save(new Producto(nombreProducto, precioProductoFloat, categoriaProductoAgregar, null));
+
+		model.addAttribute("nombreProducto", nombreProducto);
+		model.addAttribute("precioProductoFloat", precioProductoFloat);
+		model.addAttribute("categoriaProductoAgregar", categoriaProductoAgregar);
+
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
+
+		return "nuevo-producto";
+	}
+
 	@GetMapping("/categoria/producto/{id}")
-    public String mostrarProducto(Model model, @PathVariable long id, Pageable pageable) {
+	public String mostrarProducto(Model model, @PathVariable long id, Pageable pageable) {
 
-        Producto producto = productoService.findById(id).orElseThrow();
+		Producto producto = productoService.findById(id).orElseThrow();
 
-        model.addAttribute("producto", producto);
+		model.addAttribute("producto", producto);
 
-        /*Page<Producto> productos = productoService.findAll(pageable);
-        model.addAttribute("productos", productos);
-        model.addAttribute("hasPrev", productos.hasPrevious());
-        model.addAttribute("hasNext", productos.hasNext());
-        model.addAttribute("nextPage", productos.getNumber()+1);
-        model.addAttribute("prevPage", productos.getNumber()-1);*/
+		/*
+		 * Page<Producto> productos = productoService.findAll(pageable);
+		 * 
+		 * model.addAttribute("productos", productos); model.addAttribute("hasPrev",
+		 * productos.hasPrevious()); model.addAttribute("hasNext", productos.hasNext());
+		 * model.addAttribute("nextPage", productos.getNumber()+1);
+		 * model.addAttribute("prevPage", productos.getNumber()-1);
+		 */
 
-        return "ver-producto";
-    }
+		return "ver-producto";
+	}
+
+	@RequestMapping("/busqueda")
+	public String Busqueda(Model model, @RequestParam String productoBuscado) {
+		model.addAttribute("busqueda", productoBuscado);
+		return "producto-busqueda";
+	}
+
+	// Varios
+	
+	public boolean esAdmin() {
+		boolean esAdmin = false;
+		int tipoCliente = clienteService.getClienteActual().getTipoCliente();
+		return tipoCliente == 0;
+	}
 }

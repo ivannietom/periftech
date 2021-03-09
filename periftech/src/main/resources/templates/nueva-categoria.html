@@ -1,0 +1,18 @@
+{{>header}}
+
+	{{#categoriasActuales}}
+		<a href="categoria/{{id}}"><p> {{nombreCategoria}} </p></a>
+		<a href="">Eliminar categor&iacute;a</a>
+		<hr>
+	{{/categoriasActuales}}
+	
+	{{^categoriasActuales}}	
+		<p>No hay ninguna categor&iacute;a</p>
+	{{/categoriasActuales}}
+	<h1>Agregar categor&iacute;a</h1>
+		<form method="post" action="/agregarCategoria">
+			Nombre categor&iacute;a: <input type="text" name="nombreCategoria">	
+			<input type="submit" value="Agregar">
+		</form>
+		
+{{>footer}}

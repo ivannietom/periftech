@@ -26,23 +26,31 @@ public class ProductoService {
 
 	@PostConstruct
 	public void init() {
-		save(new Producto("Teclado 1", 20.2f, categorias.findBynombreCategoria("Teclados"), null, 20));
-		save(new Producto("Teclado 2", 40.5f,categorias.findBynombreCategoria("Teclados"), null, 20));
-		save(new Producto("Ratón 1", 10.99f, categorias.findBynombreCategoria("Ratones"), null, 20));	
-		save(new Producto("Ratón 2", 25.82f, categorias.findBynombreCategoria("Ratones"), null, 20));
-		save(new Producto("Pantalla 1", 199.99f, categorias.findBynombreCategoria("Pantallas"), null, 20));
-		save(new Producto("Pantalla 2", 499.99f, categorias.findBynombreCategoria("Pantallas"), null, 20));
+		save(new Producto("Teclado 1", 20.2f, categorias.findByNombreCategoria("Teclados"), null));
+		save(new Producto("Teclado 2", 40.5f,categorias.findByNombreCategoria("Teclados"), null));
+		save(new Producto("Ratón 1", 10.99f, categorias.findByNombreCategoria("Ratones"), null));	
+		save(new Producto("Ratón 2", 25.82f, categorias.findByNombreCategoria("Ratones"), null));
+		save(new Producto("Pantalla 1", 199.99f, categorias.findByNombreCategoria("Pantallas"), null));
+		save(new Producto("Pantalla 2", 499.99f, categorias.findByNombreCategoria("Pantallas"), null));
+		save(new Producto("Suscripción premium", 5.99f, categorias.findByNombreCategoria("Premium"), null));
 	}
 
 	public List<Producto> findAll() {
 		return productos.findAll();
 	}
+	
 	public Page<Producto> findBycategoria(Categoria categoria,Pageable pageable){
 		return productos.findByCategoria(categoria,pageable);
 	}
+	
 	public Page<Producto> findByCarroProducto(Cart carroProducto,Pageable pageable){
 		return productos.findByCarroProducto(carroProducto,pageable);
 	}
+	
+	public Producto findByNombreProducto(String nombreProducto){
+		return productos.findByNombreProducto(nombreProducto);
+	}
+	
 	public Page<Producto> findAll(Pageable pageable) {
 		return productos.findAll(pageable);
 	}

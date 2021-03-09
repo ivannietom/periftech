@@ -4,14 +4,11 @@
     {{#producto}}
         <h1>Producto: {{nombreProducto}}</h1>
         <p> Nombre del producto: {{nombreProducto}} </p>
+        <p> Categor&iacute;a del producto: {{categoria.nombreCategoria}}</p>
         <p> Precio del producto: {{precio}} &euro; </p>
-        <p> Stock del producto: {{stock}} unidades</p>
-
        <form method="post" action="agregarProducto{{id}}">
-        <input type="submit" value="Agregar Producto">
-    </form>
-
-
+			<input type="submit" value="Agregar Producto">
+		</form>   
     {{/producto}}
 
     <br>

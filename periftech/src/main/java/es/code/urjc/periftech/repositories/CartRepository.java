@@ -6,6 +6,5 @@ import es.code.urjc.periftech.models.Cart;
 import es.code.urjc.periftech.models.Cliente;
 
 public interface CartRepository extends JpaRepository<Cart, Long>{
-
-    Cart findBycliente(Cliente cliente);
+	Cart findBycliente(Cliente cliente);
 }

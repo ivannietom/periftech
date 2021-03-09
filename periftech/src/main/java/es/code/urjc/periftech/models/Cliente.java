@@ -22,13 +22,14 @@ public class Cliente {
 	private Cart carroCliente;
 	@OneToOne(cascade=CascadeType.ALL)
 	private Pedido pedidoCliente;
+	private int tipoCliente; // 0 = admin, 1 = premium, 2 = normal
 	
 	
 	protected Cliente() {}
 
 
 	public Cliente(String nombreCompleto, String nombreUsuario, String correo, String password, String direccion,
-			Cart carroCliente, Pedido pedidoCliente) {
+			Cart carroCliente, Pedido pedidoCliente, int tipoCliente) {
 		super();
 		this.nombreCompleto = nombreCompleto;
 		this.nombreUsuario = nombreUsuario;
@@ -37,6 +38,7 @@ public class Cliente {
 		this.direccion = direccion;
 		this.carroCliente = carroCliente;
 		this.pedidoCliente = pedidoCliente;
+		this.tipoCliente = tipoCliente;
 	}
 
 
@@ -117,6 +119,15 @@ public class Cliente {
 
 	public void setPedidoCliente(Pedido pedidoCliente) {
 		this.pedidoCliente = pedidoCliente;
+	}
+	
+	public int getTipoCliente() {
+		return tipoCliente;
+	}
+
+
+	public void setTipoCliente(int tipoCliente) {
+		this.tipoCliente = tipoCliente;
 	}
 
 	@Override

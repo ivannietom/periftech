@@ -1,12 +1,19 @@
 {{>header}}
 
-<p> Carro compra </p>
-    <h3>Lista de productos disponibles: </h3>
-    {{#listaproductos}}
-        <p> {{nombreProducto}}</p>
-    {{/listaproductos}}
-
-    {{^listaproductos}}
-        <p> Carro vacio</p>
-    {{/listaproductos}}
+	<h1> Este es tu carrito: </h1>
+		{{#listaProductos}}
+			<h2> {{nombreProducto}} </h2>
+			<p> {{categoria.nombreCategoria}} <p>
+			<h5> {{precio}} &euro;</h5>
+			<a href="">Eliminar producto del carrito</a>
+			<hr>	
+		{{/listaProductos}}
+		{{^listaProductos}}
+			<p> Carro vac&iacute;o </p>
+		{{/listaProductos}}
+		<h3>Total del carrito: {{totalCarro}} &euro; </h3>
+		
+		<hr>
+		<a href="/realizarPedido"><p>Realizar pedido</p></a>
+		
 {{>footer}}

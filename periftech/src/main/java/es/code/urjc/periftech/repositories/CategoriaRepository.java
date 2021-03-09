@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import es.code.urjc.periftech.models.Categoria;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long>{
-    Categoria findBynombreCategoria(String nombreCategoria);
+	Categoria findByNombreCategoria(String nombreCategoria);
 }

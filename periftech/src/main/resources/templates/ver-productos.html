@@ -1,5 +1,5 @@
-<html>
-<body>
+{{>header}}
+
 	<h1>Categor&iacute;a: {{categoria.nombreCategoria}}</h1>
 	
 	<br>
@@ -9,6 +9,10 @@
 		<a href="producto/{{id}}">{{nombreProducto}}</a> <br>
 	{{/productos}}
 	
+	{{^productos}}
+		<p> No hay productos en esta categor&iacute;a </p>
+	{{/productos}}
+	
 	<a href="/categorias">Retroceder</a>
-</body>
-</html>
+	
+{{>footer}}

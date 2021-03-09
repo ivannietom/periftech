@@ -1,0 +1,21 @@
+{{>header}}
+
+	{{#productosActuales}}
+		<a href="/categoria/producto/{id}"><p> {{nombreProducto}} </p></a>
+		<a href="">Eliminar producto</a>
+		<hr>
+	{{/productosActuales}}
+	
+	{{^productosActuales}}	
+		<p>No hay ning&uacute;n producto</p>
+	{{/productosActuales}}
+	<h1>Agregar producto</h1>
+		<form method="post" action="/agregarProducto">
+			Nombre producto: <input type="text" name="nombreProducto">	
+			Precio producto: <input type="text" name="precioProducto">	
+			Categor&iacute;a producto: <input type="text" name="categoriaProducto">
+			<input type="submit" value="Agregar">
+		</form>
+		
+{{>footer}}
+

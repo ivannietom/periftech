@@ -18,17 +18,15 @@ public class Producto {
 	private Categoria categoria;
 	@ManyToOne
 	private Cart carroProducto;
-	private int stock;
 	
 	protected Producto() {}
 
-	public Producto(String nombre, float precio, Categoria categoria, Cart carroProducto, int stock) {
+	public Producto(String nombre, float precio, Categoria categoria, Cart carroProducto) {
 		super();
 		this.nombreProducto = nombre;
 		this.precio = precio;
 		this.categoria = categoria;
 		this.carroProducto = carroProducto;
-		this.stock = stock;
 	}
 
 	public Long getId() {
@@ -71,17 +69,10 @@ public class Producto {
 		this.carroProducto = carroProducto;
 	}
 
-	public int getStock() {
-		return stock;
-	}
-
-	public void setStock(int stock) {
-		this.stock = stock;
-	}
 
 	@Override
 	public String toString() {
 		return "Producto [id=" + id + ", nombre=" + nombreProducto + ", precio=" + precio + ", categoria=" + categoria
-				+ ", carroProducto=" + carroProducto + ", stock=" + stock + "]";
+				+ ", carroProducto=" + carroProducto + "]";
 	}
 }
