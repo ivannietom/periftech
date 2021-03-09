@@ -46,5 +46,9 @@ public class CategoriaService {
 	public void save(Categoria categoria) {
 		categorias.save(categoria);
 	}
+	
+	public void deleteById(long id) {
+		categorias.deleteById(id);
+	}
 }
 

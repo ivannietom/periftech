@@ -13,6 +13,7 @@ public class ClienteService {
 	
 
 	public Cliente clienteActual;
+	public boolean estaLogeado;
 	@Autowired
 	private ClienteRepository clientes;
 	
@@ -33,6 +34,14 @@ public class ClienteService {
 	
 	public void save(Cliente cliente) {
 		clientes.save(cliente);
+	}
+
+	public boolean estaLogeado() {
+		return estaLogeado;
+	}
+
+	public void setEstaLogeado(boolean estaLogeado) {
+		this.estaLogeado = estaLogeado;
 	}
 	
 }

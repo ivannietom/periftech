@@ -61,21 +61,45 @@ public class RouteController {
 	@GetMapping("/cart")
 	public String Cart(Model model, Pageable pageable) {
 		float totalCarro = 0;
-		Cart carritoActual = clienteService.getClienteActual().getCarroCliente();
-
-		Page<Producto> listaProductos = productoService.findByCarroProducto(carritoActual, pageable);
-		totalCarro = carritoActual.getCoste();
-
-		model.addAttribute("listaProductos", listaProductos);
-		model.addAttribute("hasPrev", listaProductos.hasPrevious());
-		model.addAttribute("hasNext", listaProductos.hasNext());
-		model.addAttribute("nextPage", listaProductos.getNumber() + 1);
-		model.addAttribute("prevPage", listaProductos.getNumber() - 1);
-		model.addAttribute("totalCarro", totalCarro);
-
-		return "cart";
+		if(clienteService.estaLogeado) {
+			
+			Cart carritoActual = clienteService.getClienteActual().getCarroCliente();
+	
+			Page<Producto> listaProductos = productoService.findByCarroProducto(carritoActual, pageable);
+			totalCarro = carritoActual.getCoste();
+			
+			model.addAttribute("clienteEstaLogueado",clienteService.estaLogeado); 
+			model.addAttribute("listaProductos", listaProductos);
+			model.addAttribute("hasPrev", listaProductos.hasPrevious());
+			model.addAttribute("hasNext", listaProductos.hasNext());
+			model.addAttribute("nextPage", listaProductos.getNumber() + 1);
+			model.addAttribute("prevPage", listaProductos.getNumber() - 1);
+			model.addAttribute("totalCarro", totalCarro);
+			
+			return "cart";
+		}else return "hacer-login"; 
 	}
-
+	
+	@GetMapping("/eliminarProductoCarro/{id}")
+	public String eliminarProductoCarro (Model model, @PathVariable long id, Pageable pageable) {
+		
+		Cart carrito =  clienteService.getClienteActual().getCarroCliente();
+		
+		Producto productoAEliminar = productoService.findById(id).orElseThrow();
+        carrito.getProductos().remove(productoAEliminar);
+        productoAEliminar.setCarroProducto(null);
+        
+        float costeCarroActual = carrito.getCoste();
+		float costeActualizado = costeCarroActual - productoAEliminar.getPrecio();
+		carrito.setCoste(costeActualizado);
+		
+        productoService.save(productoAEliminar);
+        cartService.save(clienteService.getClienteActual().getCarroCliente());
+        
+        model.addAttribute("productoAEliminar", productoAEliminar);
+        
+		return "producto-eliminado-cart";
+	}
 	// CATEGORIA
 
 	@GetMapping("/categorias")
@@ -131,6 +155,16 @@ public class RouteController {
 
 		return "ver-productos";
 	}
+	@GetMapping("/eliminarCategoria/{id}")
+	public String eliminarCategoria(Model model, @PathVariable long id, Pageable pageable) {
+		
+	Categoria categoriaEliminada = categoriaService.findById(id).orElseThrow();
+	categoriaService.deleteById(id);
+	
+	model.addAttribute("categoriaEliminada", categoriaEliminada);
+		
+	return "categoria-eliminada";
+	}
 
 	// CLIENTE
 	
@@ -168,6 +202,7 @@ public class RouteController {
 		if (c != null && c.getPassword().equals(password)) {
 			existe = true;
 			clienteService.setClienteActual(c);
+			clienteService.setEstaLogeado(true);
 		}
 		if (existe) {
 			if (clienteService.getClienteActual().getCarroCliente() == null) {
@@ -189,23 +224,23 @@ public class RouteController {
 	// PEDIDO
 	
 	@GetMapping("/realizarPedido")
-	public String realizarPedido(Model model) {
+	public String realizarPedido(Model model, Pageable pageable) {
 		float costeCarro = clienteService.getClienteActual().getCarroCliente().getCoste();
 
 		Random r = new Random();
 		DecimalFormat df = new DecimalFormat("#.##");
-		float costeEnvio = r.nextFloat() * 5;
-		String costeEnvioFormateado = df.format(costeEnvio);
-
+		float costeEnvio = 0;
+		
 		float costePedido = 0;
 		if (clienteService.getClienteActual().getTipoCliente() == 2) {
+			costeEnvio = r.nextFloat() * 5;
 			costePedido = costeCarro + costeEnvio;
-			String costePedidoFormateado = df.format(costePedido);
 		} else {
-			costePedido = costeCarro;
-			String costePedidoFormateado = df.format(costePedido);
+			costeEnvio = 0;
+			costePedido = costeCarro; 
 		}
-
+		String costeEnvioFormateado = df.format(costeEnvio); 
+		
 		// float costePedido = costeCarro + costeEnvio;
 		String costePedidoFormateado = df.format(costePedido);
 
@@ -220,7 +255,7 @@ public class RouteController {
 		clienteService.getClienteActual().getCarroCliente(), costePedido);
 		clienteService.getClienteActual().setPedidoCliente(pedidoCliente);
 		clienteService.getClienteActual().getCarroCliente().setPedidoCarrito(pedidoCliente);
-		clienteService.clienteActual.setCarroCliente(null);
+	
 		Producto productoPremium = productoService.findByNombreProducto("Suscripción premium");
 		boolean esPremium = clienteService.getClienteActual().getCarroCliente().getProductos()
 				.contains(productoPremium);
@@ -228,6 +263,15 @@ public class RouteController {
 			clienteService.getClienteActual().setTipoCliente(1);
 		}
 
+		Cart cartActual = clienteService.getClienteActual().getCarroCliente();
+		Page<Producto> listaProductos = productoService.findByCarroProducto(cartActual, pageable);
+		cartActual.setCoste(0);
+		for(Producto p : listaProductos) {
+			cartActual.getProductos().remove(p);
+			p.setCarroProducto(null);
+		}
+		
+	
 		pedidos.save(pedidoCliente);
 		clientes.save(clienteService.getClienteActual());
 		carros.save(clienteService.getClienteActual().getCarroCliente());
@@ -238,21 +282,25 @@ public class RouteController {
 
 	@RequestMapping("/categoria/producto/agregarProducto{id}")
 	public String agregarProductoCarro(Model model, @PathVariable long id) {
-
-		Producto productoActual = productos.findById(id).orElseThrow();
-		Cart carrito = clienteService.getClienteActual().getCarroCliente();
-
-		carrito.getProductos().add(productoActual);
-		productoActual.setCarroProducto(carrito);
-
-		float costeCarroActual = carrito.getCoste();
-		float costeActualizado = costeCarroActual + productoActual.getPrecio();
-		carrito.setCoste(costeActualizado);
-
-		productos.save(productoActual);
-		carros.save(carrito);
-
-		return "producto-agregado-cart";
+		
+		if(clienteService.estaLogeado) {
+			Producto productoActual = productos.findById(id).orElseThrow();
+			Cart carrito = clienteService.getClienteActual().getCarroCliente();
+	
+			carrito.getProductos().add(productoActual);
+			productoActual.setCarroProducto(carrito);
+	
+			float costeCarroActual = carrito.getCoste();
+			float costeActualizado = costeCarroActual + productoActual.getPrecio();
+			carrito.setCoste(costeActualizado);
+	
+			productos.save(productoActual);
+			carros.save(carrito);
+			
+			model.addAttribute("productoActual", productoActual);
+	
+			return "producto-agregado-cart";
+		}else return "hacer-login"; 
 	}
 
 	@GetMapping("/nuevo-producto")
@@ -282,7 +330,18 @@ public class RouteController {
 
 		return "nuevo-producto";
 	}
-
+	
+	@GetMapping("/eliminarProducto/{id}")
+	public String eliminarProducto(Model model, @PathVariable long id, Pageable pageable) {
+		
+		Producto productoEliminado = productoService.findById(id).orElseThrow();
+		productoService.deleteById(id);
+		
+		model.addAttribute("productoEliminado", productoEliminado);
+			
+		return "producto-eliminado";
+	}
+	
 	@GetMapping("/categoria/producto/{id}")
 	public String mostrarProducto(Model model, @PathVariable long id, Pageable pageable) {
 
@@ -301,10 +360,15 @@ public class RouteController {
 
 		return "ver-producto";
 	}
-
+	
 	@RequestMapping("/busqueda")
 	public String Busqueda(Model model, @RequestParam String productoBuscado) {
-		model.addAttribute("busqueda", productoBuscado);
+		
+		Producto productoEncontrado = productoService.findByNombreProducto(productoBuscado);
+		
+		model.addAttribute("productoBuscado",productoBuscado);
+		model.addAttribute("productoEncontrado", productoEncontrado);
+		
 		return "producto-busqueda";
 	}
 
@@ -312,7 +376,7 @@ public class RouteController {
 	
 	public boolean esAdmin() {
 		boolean esAdmin = false;
-		int tipoCliente = clienteService.getClienteActual().getTipoCliente();
+		int tipoCliente = clienteService.getClienteActual().getTipoCliente(); 
 		return tipoCliente == 0;
 	}
 }

@@ -62,4 +62,8 @@ public class ProductoService {
 	public void save(Producto producto) {
 		productos.save(producto);
 	}
+	
+	public void deleteById(long id) {
+		productos.deleteById(id);
+	}
 }

@@ -1,5 +1,12 @@
 {{>header}}
 
-	<p>Has buscado: {{busqueda}}</p>
+	<h1> Has buscado: {{productoBuscado}}</h1>
+    {{#productoEncontrado}}	
+        <p> Producto encontrado: </p>
+		<a href="/categoria/producto/{{id}}"><p>{{productoEncontrado.nombreProducto}}</p></a>
+	{{/productoEncontrado}}
+	{{^productoEncontrado}}
+		<p> Producto no encontrado </p>
+	{{/productoEncontrado}}
 
 {{>footer}}
