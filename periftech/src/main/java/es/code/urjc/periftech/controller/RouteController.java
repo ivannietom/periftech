@@ -52,15 +52,19 @@ public class RouteController {
 
 	@GetMapping("/")
 	public String Index(Model model) {
-
-		return "index";
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		return "index"; 
 	}
 
 	// CART
 	
 	@GetMapping("/cart")
-	public String Cart(Model model, Pageable pageable) {
+	public String Cart(Model model, Pageable pageable) { 
 		float totalCarro = 0;
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		if(clienteService.estaLogeado) {
 			
 			Cart carritoActual = clienteService.getClienteActual().getCarroCliente();
@@ -83,6 +87,9 @@ public class RouteController {
 	@GetMapping("/eliminarProductoCarro/{id}")
 	public String eliminarProductoCarro (Model model, @PathVariable long id, Pageable pageable) {
 		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		Cart carrito =  clienteService.getClienteActual().getCarroCliente();
 		
 		Producto productoAEliminar = productoService.findById(id).orElseThrow();
@@ -104,12 +111,15 @@ public class RouteController {
 
 	@GetMapping("/categorias")
 	public String mostrarCategorias(Model model, Pageable pageable) {
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
 
 		Page<Categoria> categorias = categoriaService.findAll(pageable);
 
 		model.addAttribute("categorias", categorias);
 		model.addAttribute("hasPrev", categorias.hasPrevious());
-		model.addAttribute("hasNext", categorias.hasNext());
+		model.addAttribute("hasNext", categorias.hasNext()); 
 		model.addAttribute("nextPage", categorias.getNumber() + 1);
 		model.addAttribute("prevPage", categorias.getNumber() - 1);
 
@@ -118,6 +128,10 @@ public class RouteController {
 
 	@GetMapping("/nueva-categoria")
 	public String nuevaCategoria(Model model, Pageable pageable) {
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		Page<Categoria> categoriasActuales = categoriaService.findAll(pageable);
 		model.addAttribute("categoriasActuales", categoriasActuales);
 		
@@ -129,6 +143,10 @@ public class RouteController {
 
 	@RequestMapping("/agregarCategoria")
 	public String agregarCategoria(Model model, @RequestParam String nombreCategoria) {
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		categoriaService.save(new Categoria(nombreCategoria, null));
 		model.addAttribute("nombreCategoria", nombreCategoria);
 
@@ -141,6 +159,9 @@ public class RouteController {
 	@GetMapping("/categoria/{id}")
 	public String mostrarCategoria(Model model, @PathVariable long id, Pageable pageable) {
 
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		Categoria categoria = categoriaService.findById(id).orElseThrow();
 
 		model.addAttribute("categoria", categoria);
@@ -158,36 +179,69 @@ public class RouteController {
 	@GetMapping("/eliminarCategoria/{id}")
 	public String eliminarCategoria(Model model, @PathVariable long id, Pageable pageable) {
 		
-	Categoria categoriaEliminada = categoriaService.findById(id).orElseThrow();
-	categoriaService.deleteById(id);
-	
-	model.addAttribute("categoriaEliminada", categoriaEliminada);
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
 		
-	return "categoria-eliminada";
+		Categoria categoriaEliminada = categoriaService.findById(id).orElseThrow();
+		categoriaService.deleteById(id);
+		
+		model.addAttribute("categoriaEliminada", categoriaEliminada);
+			
+		return "categoria-eliminada";
 	}
 
 	// CLIENTE
 	
 	@GetMapping("/login")
 	public String Login(Model model) {
-
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
 		return "login";
 	}
-
-	@GetMapping("/register")
-	public String Register(Model model) {
-		return "register";
+	@GetMapping("/logout")
+	public String Logout(Model model) {
+		clienteService.setClienteActual(null);
+		clienteService.setEstaLogeado(false);
+		return "logout";
 	}
-
+	@GetMapping("/register") 
+	public String Register(Model model) {
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
+		return "register"; 
+	}
+	@GetMapping("/mi-perfil")
+	public String miPerfil(Model model) {
+		boolean esNormal = false;
+		boolean esAdmin = false;
+		boolean esPremium = false;
+		
+		Cliente clientePerfil = clienteService.getClienteActual(); 
+		int tipoCliente = clientePerfil.getTipoCliente();
+		if(tipoCliente == 0) esAdmin = true;
+		if(tipoCliente == 1) esPremium = true;
+		if(tipoCliente == 2) esNormal = true;
+		
+		model.addAttribute("esAdmin", esAdmin);
+		model.addAttribute("esPremium", esPremium);
+		model.addAttribute("esNormal", esNormal);
+		model.addAttribute("clientePerfil", clientePerfil);
+		return "mi-perfil";
+	}
 	@RequestMapping("/registro")
 	public String Registro(Model model, @RequestParam String nombreCompleto, @RequestParam String nombreUsuario,
 			@RequestParam String email, @RequestParam String password, @RequestParam String direccion) {
 
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		model.addAttribute("nombreCompleto", nombreCompleto);
 		model.addAttribute("nombreUsuario", nombreUsuario);
 		model.addAttribute("email", email);
 		model.addAttribute("password", password);
-		model.addAttribute("direccion", direccion);
+		model.addAttribute("direccion", direccion); 
 
 		Cliente cliente = new Cliente(nombreCompleto, nombreUsuario, email, password, direccion, null, null, 2);
 		clientes.save(cliente);
@@ -196,7 +250,10 @@ public class RouteController {
 
 	@RequestMapping("/esLoginCorrecto")
 	public String comprobarLogin(Model model, @RequestParam String nombreUsuario, @RequestParam String password) {
-
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		boolean existe = false;
 		Cliente c = clientes.findByNombreUsuario(nombreUsuario);
 		if (c != null && c.getPassword().equals(password)) {
@@ -225,8 +282,12 @@ public class RouteController {
 	
 	@GetMapping("/realizarPedido")
 	public String realizarPedido(Model model, Pageable pageable) {
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		float costeCarro = clienteService.getClienteActual().getCarroCliente().getCoste();
-
+	
 		Random r = new Random();
 		DecimalFormat df = new DecimalFormat("#.##");
 		float costeEnvio = 0;
@@ -249,7 +310,7 @@ public class RouteController {
 		model.addAttribute("costePedidoFormateado", costePedidoFormateado);
 		model.addAttribute("costeCarro", costeCarro);
 		model.addAttribute("costeEnvioFormateado", costeEnvioFormateado);
-		model.addAttribute("direccionCliente", direccionCliente);
+		model.addAttribute("direccionCliente", direccionCliente); 
 
 		Pedido pedidoCliente = new Pedido(clienteService.getClienteActual(),
 		clienteService.getClienteActual().getCarroCliente(), costePedido);
@@ -283,6 +344,9 @@ public class RouteController {
 	@RequestMapping("/categoria/producto/agregarProducto{id}")
 	public String agregarProductoCarro(Model model, @PathVariable long id) {
 		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		if(clienteService.estaLogeado) {
 			Producto productoActual = productos.findById(id).orElseThrow();
 			Cart carrito = clienteService.getClienteActual().getCarroCliente();
@@ -305,6 +369,10 @@ public class RouteController {
 
 	@GetMapping("/nuevo-producto")
 	public String nuevoProducto(Model model, Pageable pageable) {
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		boolean esAdmin = esAdmin();
 		model.addAttribute("esAdmin", esAdmin);
 
@@ -316,7 +384,11 @@ public class RouteController {
 
 	@RequestMapping("/agregarProducto")
 	public String agregarProducto(Model model, @RequestParam String nombreProducto, @RequestParam String precioProducto,
-			@RequestParam String categoriaProducto) {
+			@RequestParam String categoriaProducto) { 
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		float precioProductoFloat = Float.parseFloat(precioProducto);
 		Categoria categoriaProductoAgregar = categoriaService.findByNombreCategoria(categoriaProducto);
 		productoService.save(new Producto(nombreProducto, precioProductoFloat, categoriaProductoAgregar, null));
@@ -334,6 +406,9 @@ public class RouteController {
 	@GetMapping("/eliminarProducto/{id}")
 	public String eliminarProducto(Model model, @PathVariable long id, Pageable pageable) {
 		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		Producto productoEliminado = productoService.findById(id).orElseThrow();
 		productoService.deleteById(id);
 		
@@ -344,7 +419,10 @@ public class RouteController {
 	
 	@GetMapping("/categoria/producto/{id}")
 	public String mostrarProducto(Model model, @PathVariable long id, Pageable pageable) {
-
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		Producto producto = productoService.findById(id).orElseThrow();
 
 		model.addAttribute("producto", producto);
@@ -364,6 +442,9 @@ public class RouteController {
 	@RequestMapping("/busqueda")
 	public String Busqueda(Model model, @RequestParam String productoBuscado) {
 		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
+		
 		Producto productoEncontrado = productoService.findByNombreProducto(productoBuscado);
 		
 		model.addAttribute("productoBuscado",productoBuscado);
@@ -375,7 +456,6 @@ public class RouteController {
 	// Varios
 	
 	public boolean esAdmin() {
-		boolean esAdmin = false;
 		int tipoCliente = clienteService.getClienteActual().getTipoCliente(); 
 		return tipoCliente == 0;
 	}

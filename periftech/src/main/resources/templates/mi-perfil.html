@@ -1,0 +1,22 @@
+{{>header}}
+
+	<p> Nombre completo: {{clientePerfil.nombreCompleto}} </p>
+	<p> Nombre de usuario: {{clientePerfil.nombreUsuario}} </p>
+	<p> Correo: {{clientePerfil.correo}} </p>
+	<p> Direcci&oacute;n: {{clientePerfil.direccion}} </p>
+	
+	{{#esAdmin}}
+		<p> Tipo de cliente: Administrador </p> 
+	{{/esAdmin}}
+	
+	{{#esPremium}}
+		<p> Tipo de cliente: Premium </p> 
+	{{/esPremium}}
+	
+	{{#esNormal}}
+		<p> Tipo de cliente: Normal </p> 
+	{{/esNormal}}
+	
+	<a href = "/logout" ><p>Cerrar sesi&oacute;n</p></a> 
+
+{{>footer}}
