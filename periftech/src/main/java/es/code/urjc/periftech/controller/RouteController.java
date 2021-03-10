@@ -204,12 +204,14 @@ public class RouteController {
 		model.addAttribute("estaLogeado",estaLogeado); 
 		return "login";
 	}
+	
 	@GetMapping("/logout")
 	public String Logout(Model model) {
 		clienteService.setClienteActual(null);
 		clienteService.setEstaLogeado(false);
 		return "logout";
 	}
+	
 	@GetMapping("/register") 
 	public String Register(Model model) {
 		
@@ -218,11 +220,15 @@ public class RouteController {
 		
 		return "register"; 
 	}
+	
 	@GetMapping("/mi-perfil")
 	public String miPerfil(Model model) {
 		
 		boolean esAdmin = esAdmin();
 		model.addAttribute("esAdmin", esAdmin);
+		
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
 		
 		boolean esNormal = false;
 		boolean esUsuarioAdmin = false; 
@@ -238,8 +244,10 @@ public class RouteController {
 		model.addAttribute("esPremium", esPremium);
 		model.addAttribute("esNormal", esNormal);
 		model.addAttribute("clientePerfil", clientePerfil);
+		
 		return "mi-perfil";
 	}
+	
 	@RequestMapping("/registro")
 	public String Registro(Model model, @RequestParam String nombreCompleto, @RequestParam String nombreUsuario,
 			@RequestParam String email, @RequestParam String password, @RequestParam String direccion) {
@@ -261,9 +269,6 @@ public class RouteController {
 	@RequestMapping("/esLoginCorrecto")
 	public String comprobarLogin(Model model, @RequestParam String nombreUsuario, @RequestParam String password) {
 		
-		boolean estaLogeado = clienteService.estaLogeado;
-		model.addAttribute("estaLogeado",estaLogeado); 
-		
 		boolean existe = false;
 		Cliente c = clientes.findByNombreUsuario(nombreUsuario);
 		if (c != null && c.getPassword().equals(password)) {
@@ -278,11 +283,13 @@ public class RouteController {
 				clienteService.getClienteActual().setCarroCliente(carrito);
 				carros.save(carrito);
 				clientes.save(clienteService.getClienteActual());
+				boolean esAdmin = esAdmin();
+				model.addAttribute("esAdmin", esAdmin);
 			}
-		}
+		} 
 
-		boolean esAdmin = esAdmin();
-		model.addAttribute("esAdmin", esAdmin);
+		boolean estaLogeado = clienteService.estaLogeado;
+		model.addAttribute("estaLogeado",estaLogeado); 
 
 		model.addAttribute("esLoginCorrecto", existe);
 		return "comprobar-login";
