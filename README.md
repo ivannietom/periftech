@@ -25,7 +25,8 @@ Vamos a crear una web de venta de productos informáticos. Tendrá 2 partes:
 ## Capturas de las pantallas:
 
 ## Diagrama de navegación:
-![Diagrama_de_navegacion](https://user-images.githubusercontent.com/70818106/110702580-fe183480-81f2-11eb-9cbd-a4f3b0fd98e8.png)
+![Diagrama_de_navegacion](https://user-images.githubusercontent.com/70818106/110705028-1473bf80-81f6-11eb-9bcb-6129c66a74d8.png)
+
 
 ## Diagrama de clases UML:
 ![UML](https://user-images.githubusercontent.com/70818106/110702629-138d5e80-81f3-11eb-8e01-aa0bf715b41d.png)
