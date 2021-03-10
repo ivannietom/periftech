@@ -94,7 +94,7 @@ public class RouteController {
 		
 		Producto productoAEliminar = productoService.findById(id).orElseThrow();
         carrito.getProductos().remove(productoAEliminar);
-        productoAEliminar.setCarroProducto(null);
+        productoAEliminar.setCarroProducto(null); 
         
         float costeCarroActual = carrito.getCoste();
 		float costeActualizado = costeCarroActual - productoAEliminar.getPrecio();
@@ -142,13 +142,16 @@ public class RouteController {
 	}
 
 	@RequestMapping("/agregarCategoria")
-	public String agregarCategoria(Model model, @RequestParam String nombreCategoria) {
+	public String agregarCategoria(Model model, @RequestParam String nombreCategoria, Pageable pageable) {
 		
 		boolean estaLogeado = clienteService.estaLogeado;
 		model.addAttribute("estaLogeado",estaLogeado); 
 		
 		categoriaService.save(new Categoria(nombreCategoria, null));
 		model.addAttribute("nombreCategoria", nombreCategoria);
+		
+		Page<Categoria> categoriasActuales = categoriaService.findAll(pageable);
+		model.addAttribute("categoriasActuales", categoriasActuales);
 
 		boolean esAdmin = esAdmin();
 		model.addAttribute("esAdmin", esAdmin);
@@ -178,6 +181,9 @@ public class RouteController {
 	}
 	@GetMapping("/eliminarCategoria/{id}")
 	public String eliminarCategoria(Model model, @PathVariable long id, Pageable pageable) {
+		
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
 		
 		boolean estaLogeado = clienteService.estaLogeado;
 		model.addAttribute("estaLogeado",estaLogeado); 
@@ -214,8 +220,12 @@ public class RouteController {
 	}
 	@GetMapping("/mi-perfil")
 	public String miPerfil(Model model) {
+		
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
+		
 		boolean esNormal = false;
-		boolean esAdmin = false;
+		boolean esUsuarioAdmin = false; 
 		boolean esPremium = false;
 		
 		Cliente clientePerfil = clienteService.getClienteActual(); 
@@ -224,7 +234,7 @@ public class RouteController {
 		if(tipoCliente == 1) esPremium = true;
 		if(tipoCliente == 2) esNormal = true;
 		
-		model.addAttribute("esAdmin", esAdmin);
+		model.addAttribute("esUsuarioAdmin", esUsuarioAdmin);
 		model.addAttribute("esPremium", esPremium);
 		model.addAttribute("esNormal", esNormal);
 		model.addAttribute("clientePerfil", clientePerfil);
@@ -384,7 +394,7 @@ public class RouteController {
 
 	@RequestMapping("/agregarProducto")
 	public String agregarProducto(Model model, @RequestParam String nombreProducto, @RequestParam String precioProducto,
-			@RequestParam String categoriaProducto) { 
+			@RequestParam String categoriaProducto,Pageable pageable) { 
 		
 		boolean estaLogeado = clienteService.estaLogeado;
 		model.addAttribute("estaLogeado",estaLogeado); 
@@ -392,11 +402,15 @@ public class RouteController {
 		float precioProductoFloat = Float.parseFloat(precioProducto);
 		Categoria categoriaProductoAgregar = categoriaService.findByNombreCategoria(categoriaProducto);
 		productoService.save(new Producto(nombreProducto, precioProductoFloat, categoriaProductoAgregar, null));
+		
+
+		Page<Producto> productosActuales = productoService.findAll(pageable);
+		model.addAttribute("productosActuales", productosActuales);
 
 		model.addAttribute("nombreProducto", nombreProducto);
 		model.addAttribute("precioProductoFloat", precioProductoFloat);
 		model.addAttribute("categoriaProductoAgregar", categoriaProductoAgregar);
-
+ 
 		boolean esAdmin = esAdmin();
 		model.addAttribute("esAdmin", esAdmin);
 
@@ -405,6 +419,9 @@ public class RouteController {
 	
 	@GetMapping("/eliminarProducto/{id}")
 	public String eliminarProducto(Model model, @PathVariable long id, Pageable pageable) {
+		
+		boolean esAdmin = esAdmin();
+		model.addAttribute("esAdmin", esAdmin);
 		
 		boolean estaLogeado = clienteService.estaLogeado;
 		model.addAttribute("estaLogeado",estaLogeado); 
