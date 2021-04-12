@@ -31,5 +31,42 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
+		// Public pages
+		http.authorizeRequests().antMatchers("/").permitAll();
+		http.authorizeRequests().antMatchers("/login").permitAll();
+		http.authorizeRequests().antMatchers("/register").permitAll();
+		http.authorizeRequests().antMatchers("/registro").permitAll();
+		http.authorizeRequests().antMatchers("/logout").permitAll();
+
+		// Private pages (all other pages)
+		http.authorizeRequests().antMatchers("/categorias").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/cart").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/eliminarProductoCarro/{id}").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/nueva-categoria").hasAnyRole("ADMIN");
+		http.authorizeRequests().antMatchers("/agregarCategoria").hasAnyRole("ADMIN");
+		http.authorizeRequests().antMatchers("/categoria/{id}").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/eliminarCategoria/{id}").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/mi-perfil").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/realizarPedido").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/categoria/producto/agregarProducto{id}").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/nuevo-producto").hasAnyRole("ADMIN");
+		http.authorizeRequests().antMatchers("/agregarProducto").hasAnyRole("ADMIN");
+		http.authorizeRequests().antMatchers("/eliminarProducto/{id}").hasAnyRole("ADMIN");
+		http.authorizeRequests().antMatchers("/categoria/producto/{id}").hasAnyRole("USER");
+		http.authorizeRequests().antMatchers("/busqueda").hasAnyRole("USER");
+		
+		// Login form
+		http.formLogin().loginPage("/login"); 
+		http.formLogin().usernameParameter("nombreUsuario");
+		http.formLogin().passwordParameter("password");
+		http.formLogin().defaultSuccessUrl("/");
+		http.formLogin().failureUrl("/");
+
+		// Logout
+		http.logout().logoutUrl("/logout");
+		http.logout().logoutSuccessUrl("/");
+
+		// Disable CSRF at the moment
+		http.csrf().disable();
 	}
 }
