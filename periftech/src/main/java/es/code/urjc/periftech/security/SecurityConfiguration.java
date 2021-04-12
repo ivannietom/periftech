@@ -1,4 +1,4 @@
-package es.code.urjc.periftech;
+package es.code.urjc.periftech.security;
 
 
 import java.security.SecureRandom;
