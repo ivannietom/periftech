@@ -12,6 +12,8 @@ public class ServicioInterno {
         Socket socket;
         int puerto = 9000;
         BufferedReader entrada;
+        
+        Mailer mailer = new Mailer();
          
         try{
             server = new ServerSocket(puerto);
@@ -33,7 +35,7 @@ public class ServicioInterno {
 	            		+ "Precio del pedido: " + precioPedido + "\n"
 	            		+ "Fecha prevista de llegada: " + fechaLlegada;
 	             
-	             
+	            mailer.sendMail(infoPedido, correoCliente);
 	            System.out.println(infoPedido);
             }
         } catch(Exception e) {};
