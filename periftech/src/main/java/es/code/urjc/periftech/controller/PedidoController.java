@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import es.code.urjc.periftech.ServicioInterno;
 import es.code.urjc.periftech.models.Cart;
 import es.code.urjc.periftech.models.Pedido;
 import es.code.urjc.periftech.models.Producto;
@@ -92,6 +93,16 @@ public class PedidoController {
 		pedidos.save(pedidoCliente);
 		clientes.save(clienteService.getClienteActual());
 		carros.save(clienteService.getClienteActual().getCarroCliente());
+		
+		String nombreCliente = clienteService.getClienteActual().getNombreCompleto();
+        String correoCliente = clienteService.getClienteActual().getCorreo();
+        String precioPedido = "" + costePedidoFormateado;
+        String fechaLlegada = "00/00/0000";
+        String datosCorreo = nombreCliente + "-" + correoCliente + "-"+ direccionCliente + "-" + precioPedido + "-" + fechaLlegada;
+
+        ServicioInterno servicioInterno = new ServicioInterno();
+        servicioInterno.send(datosCorreo);
+        
 		return "realizar-pedido";
 	}
 
