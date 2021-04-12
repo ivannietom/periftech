@@ -1,0 +1,24 @@
+{{>header}}
+
+	<h1>Categor&iacute;as</h1>
+	{{#categorias}}
+		<a href="categoria/{{id}}">{{nombreCategoria}}</a><br>
+	{{/categorias}}
+	
+	<br>
+	
+	{{#hasPrev}}
+		<a href="/?page={{prevPage}}">Prev</a>	
+	{{/hasPrev}}
+	
+	{{#hasNext}}
+		<a href="/?page={{nextPage}}">Next</a>
+	{{/hasNext}}
+	
+	<br>
+	
+	{{^categorias}}
+		<p>No hay categorias</p>
+	{{/categorias}}
+
+{{>footer}}
