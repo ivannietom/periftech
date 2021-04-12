@@ -1,5 +1,7 @@
 package es.code.urjc.periftech.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import es.code.urjc.periftech.models.Cart;
 import es.code.urjc.periftech.models.Categoria;
+import es.code.urjc.periftech.models.Cliente;
 import es.code.urjc.periftech.models.Producto;
 import es.code.urjc.periftech.repositories.CartRepository;
+import es.code.urjc.periftech.repositories.ClienteRepository;
 import es.code.urjc.periftech.repositories.ProductoRepository;
 import es.code.urjc.periftech.services.CategoriaService;
 import es.code.urjc.periftech.services.ClienteService;
@@ -35,6 +39,8 @@ public class ProductoController {
 	private CategoriaService categoriaService;
 	@Autowired
 	private ClienteService clienteService;
+	@Autowired
+    private ClienteRepository clienteRepository;
 	
 	@RequestMapping("/categoria/producto/agregarProducto{id}")
 	public String agregarProductoCarro(Model model, @PathVariable long id) {
@@ -63,8 +69,16 @@ public class ProductoController {
 	}
 
 	@GetMapping("/nuevo-producto")
-	public String nuevoProducto(Model model, Pageable pageable) {
+	public String nuevoProducto(Model model, Pageable pageable, HttpServletRequest request) {
 		
+		String name = request.getUserPrincipal().getName();
+
+        Cliente c = clienteRepository.findByNombreUsuario(name);
+        if (c != null ) {
+            clienteService.setClienteActual(c);
+            clienteService.setEstaLogeado(true);
+        }
+        
 		boolean estaLogeado = clienteService.estaLogeado;
 		model.addAttribute("estaLogeado",estaLogeado); 
 		
