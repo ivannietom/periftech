@@ -62,3 +62,33 @@ Y haciendo click en el producto podemos ver la información de este mismo:
 
 ## Diagrama Entidad/Relación:
 ![Diagrama_Entidad-Relacion](https://user-images.githubusercontent.com/70818106/110702646-18eaa900-81f3-11eb-9963-20dd260f4bf3.png)
+
+# FASE 3
+
+## Capturas de las pantallas principales y diagrama de navegación:
+Ni las pantallas principales ni el diagrama de navegación han cambiado respecto a la fase anterior, por lo que son las mismas capturas de la fase anterior
+
+## Seguridad
+- Las únicas rutas disponibles sin haber hecho login son "/" y "/login"
+- Una vez se hace el login, estas son las posibilidades
+	- Login como usuario normal: acceso a "/mi-perfil", "/categorias", "/cart"
+	- Login como administrador: acceso a "/mi-perfil", "/nueva-categoria", "/nuevo-producto"
+	
+## Instrucciones para desplegar la aplicación:
+
+1.- Arrancar el contenedor de docker con mysql 
+ 
+	docker run --rm -e MYSQL_ROOT_PASSWORD=PASSWORD \
+	-e MYSQL_DATABASE=NOMBREBD -p 3306:3306 -d mysql:8.0.22
+ 
+2.- Clonar el repositorio actual
+ 
+3.- Acceder al directorio periftech/target/ y ejecutar el siguiente comando (IMPORTANTE JAVA 11)
+ 
+	java -jar periftech-0.0.1-SNAPSHOT.jar 
+ 
+4.- Acceder al directorio servicioInterno/servicioInterno/dist y ejecutar el siguiente comando (IMPORTANTE JAVA 8)
+ 
+	java -jar servicioInterno.jar
+
+5.- Acceder a localhost:9090/ y utilizar la aplicación
