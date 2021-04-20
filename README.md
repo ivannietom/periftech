@@ -83,12 +83,10 @@ Ni las pantallas principales ni el diagrama de navegación han cambiado respecto
  
 2.- Clonar el repositorio actual
  
-3.- Acceder al directorio periftech/target/ y ejecutar el siguiente comando (IMPORTANTE JAVA 11)
+3.- Acceder al directorio ejecutables/ y ejecutar los siguientes comandos:
  
 	java -jar periftech-0.0.1-SNAPSHOT.jar 
  
-4.- Acceder al directorio servicioInterno/servicioInterno/dist y ejecutar el siguiente comando (IMPORTANTE JAVA 8)
- 
-	java -jar servicioInterno.jar
+	java -jar ServicioInterno-0.0.1-SNAPSHOT.jar
 
 5.- Acceder a localhost:9090/ y utilizar la aplicación
