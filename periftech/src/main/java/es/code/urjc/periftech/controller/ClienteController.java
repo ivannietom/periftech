@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +27,12 @@ public class ClienteController {
 	@Autowired
 	private CartRepository carros;
 	
+	
 	//Servicios
 	@Autowired
 	private ClienteService clienteService;
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 	
 	@GetMapping("/login")
 	public String Login(Model model) {
@@ -93,7 +97,7 @@ public class ClienteController {
 		model.addAttribute("password", password);
 		model.addAttribute("direccion", direccion); 
 
-		Cliente cliente = new Cliente(nombreCompleto, nombreUsuario, email, password, direccion, null, null, 2);
+		Cliente cliente = new Cliente(nombreCompleto, nombreUsuario, email, password, direccion, null, null, 2,passwordEncoder.encode(password), "USER");
 		clientes.save(cliente);
 		return "registro-correcto";
 	}

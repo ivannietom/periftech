@@ -3,6 +3,7 @@ package es.code.urjc.periftech.services;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import es.code.urjc.periftech.models.Cliente;
@@ -16,11 +17,13 @@ public class ClienteService {
 	public boolean estaLogeado;
 	@Autowired
 	private ClienteRepository clientes;
+	@Autowired
+    private PasswordEncoder passwordEncoder;
 	
 	@PostConstruct
 	public void init() {
-		save(new Cliente("admin", "admin", "admin@periftech.com", "1234", "-", null, null, 0));
-		save(new Cliente("cliente normal", "a", "00ivannieto@gmail.com", "a", "c/Cliente", null, null, 2));
+		save(new Cliente("admin", "admin", "admin@periftech.com", "1234", "-", null, null, 0,passwordEncoder.encode("adminpass"), "USER", "ADMIN"));
+        save(new Cliente("cliente normal", "a", "cliente@periftech.com", "a", "c/Cliente", null, null, 2,passwordEncoder.encode("a"), "USER"));
 	}
 
 	public Cliente getClienteActual() {

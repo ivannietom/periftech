@@ -1,5 +1,10 @@
 package es.code.urjc.periftech.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import es.code.urjc.periftech.models.Cart;
+import es.code.urjc.periftech.models.Cliente;
 import es.code.urjc.periftech.models.Producto;
+import es.code.urjc.periftech.repositories.ClienteRepository;
 import es.code.urjc.periftech.services.CartService;
 import es.code.urjc.periftech.services.ClienteService;
 import es.code.urjc.periftech.services.ProductoService;
@@ -24,11 +31,35 @@ public class CartController {
 	private ClienteService clienteService;
 	@Autowired
 	private CartService cartService;
+	@Autowired
+    private ClienteRepository clienteRepository;
 
 	
 	@GetMapping("/cart")
-	public String Cart(Model model, Pageable pageable) { 
+	public String Cart(Model model, Pageable pageable, HttpServletRequest request) { 
 		float totalCarro = 0;
+		
+		String name = request.getUserPrincipal().getName();
+
+        boolean existe = false;
+        Cliente c = clienteRepository.findByNombreUsuario(name);
+        if (c != null ) {
+            existe = true;
+            clienteService.setClienteActual(c);
+            clienteService.setEstaLogeado(true);
+        }
+        if (existe) {
+            if (clienteService.getClienteActual().getCarroCliente() == null) {
+                List<Producto> listaProductos = new ArrayList<Producto>();
+                Cart carrito = new Cart(clienteService.getClienteActual(), listaProductos, 0, null);
+                clienteService.getClienteActual().setCarroCliente(carrito);
+                cartService.save(carrito);
+                clienteRepository.save(clienteService.getClienteActual());
+                boolean esAdmin = esAdmin();
+                model.addAttribute("esAdmin", esAdmin);
+            }
+        }
+        
 		boolean estaLogeado = clienteService.estaLogeado;
 		model.addAttribute("estaLogeado",estaLogeado); 
 		
@@ -74,5 +105,10 @@ public class CartController {
         
 		return "producto-eliminado-cart";
 	}
+	
+	public boolean esAdmin() {
+        int tipoCliente = clienteService.getClienteActual().getTipoCliente(); 
+        return tipoCliente == 0;
+    }
 
 }
