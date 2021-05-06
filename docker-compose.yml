@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+    database:
+        image: mysql:8.0.22
+        environment:
+            - MYSQL_ROOT_PASSWORD=password
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=password
+            - MYSQL_DATABASE=periftech 
+        ports:
+            - 3306:3306
+        networks: 
+            - periftech-network
+
+    periftech:
+        image: periftech
+        ports:
+            - 9090:9090
+        environment:
+            - DATABASE_HOST=periftech
+            - DATABASE_USER=root
+            - DATABASE_PASSWORD=password
+            - DATABASE_NAME=periftech
+            - DATABASE_PORT=3306
+        depends_on:
+             - database
+        networks:
+            - periftech-network
+    
+    servicio-interno:
+        image: servicio-interno
+        ports:
+            - 8080:8080   
+        depends_on:
+            - periftech 
+        networks:
+            - periftech-network 
+
+networks:
+    periftech-network:
+        driver: bridge

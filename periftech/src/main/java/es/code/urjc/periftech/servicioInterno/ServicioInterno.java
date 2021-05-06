@@ -11,6 +11,6 @@ public class ServicioInterno {
         HttpEntity<String> httpEntity = new HttpEntity<>(string);
         
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity res = restTemplate.postForEntity("http://localhost:8080/enviarCorreo", httpEntity, ResponseEntity.class);
+        ResponseEntity res = restTemplate.postForEntity("http://servicio-interno:8080/enviarCorreo", httpEntity, ResponseEntity.class);
 	}
 }
