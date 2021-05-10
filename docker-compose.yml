@@ -15,8 +15,6 @@ services:
 
     periftech:
         image: periftech
-        ports:
-            - 9090:9090
         environment:
             - DATABASE_HOST=periftech
             - DATABASE_USER=root
@@ -25,17 +23,23 @@ services:
             - DATABASE_PORT=3306
         depends_on:
              - database
+        expose:
+            - "9090"
         networks:
             - periftech-network
-    
     servicio-interno:
         image: servicio-interno
         ports:
             - 8080:8080   
-        depends_on:
-            - periftech 
         networks:
-            - periftech-network 
+            - periftech-network
+    balanceador:
+        image: haproxy
+        ports: 
+            - "8888:80"
+        volumes:
+            - "./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+
 
 networks:
     periftech-network:
