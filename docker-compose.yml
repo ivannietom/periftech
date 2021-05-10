@@ -12,9 +12,12 @@ services:
             - 3306:3306
         networks: 
             - periftech-network
+        restart: unless-stopped
 
     periftech:
+        build: .
         image: periftech
+        hostname: periftech
         environment:
             - DATABASE_HOST=periftech
             - DATABASE_USER=root
@@ -23,8 +26,9 @@ services:
             - DATABASE_PORT=3306
         depends_on:
              - database
-        expose:
-            - "9090"
+        ports:
+            - "9091-9095:9090"
+        restart: unless-stopped
         networks:
             - periftech-network
     servicio-interno:
@@ -39,7 +43,9 @@ services:
             - "8888:80"
         volumes:
             - "./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
-
+        restart: unless-stopped
+        networks:
+            - periftech-network
 
 networks:
     periftech-network:
