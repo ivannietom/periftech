@@ -28,7 +28,6 @@ services:
              - database
         ports:
             - "9091-9095:9090"
-        restart: unless-stopped
         networks:
             - periftech-network
     servicio-interno:
@@ -38,7 +37,7 @@ services:
         networks:
             - periftech-network
     balanceador:
-        image: haproxy
+        image: haproxy:1.9.6
         ports: 
             - "8888:80"
         volumes:
