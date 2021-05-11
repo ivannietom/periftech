@@ -33,7 +33,7 @@ services:
     servicio-interno:
         image: servicio-interno
         ports:
-            - 8080:8080   
+            - 8080:8080
         networks:
             - periftech-network
     balanceador:
