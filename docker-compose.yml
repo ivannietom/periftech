@@ -14,10 +14,10 @@ services:
             - periftech-network
         restart: unless-stopped
 
-    periftech:
+    periftech1:
         build: .
         image: periftech
-        hostname: periftech
+        hostname: periftech1
         environment:
             - DATABASE_HOST=periftech
             - DATABASE_USER=root
@@ -27,7 +27,23 @@ services:
         depends_on:
              - database
         ports:
-            - "9091-9095:9090"
+            - "9091:9090"
+        networks:
+            - periftech-network
+    periftech2:
+        build: .
+        image: periftech
+        hostname: periftech2
+        environment:
+            - DATABASE_HOST=periftech
+            - DATABASE_USER=root
+            - DATABASE_PASSWORD=password
+            - DATABASE_NAME=periftech
+            - DATABASE_PORT=3306
+        depends_on:
+             - database
+        ports:
+            - "9092:9090"
         networks:
             - periftech-network
     servicio-interno:

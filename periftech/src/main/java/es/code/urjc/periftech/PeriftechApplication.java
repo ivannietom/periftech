@@ -1,6 +1,8 @@
 package es.code.urjc.periftech;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,7 +34,12 @@ public class PeriftechApplication {
 	 Config config = new Config();
 	 JoinConfig joinConfig = config.getNetworkConfig().getJoin();
 	 joinConfig.getMulticastConfig().setEnabled(false);
-	 joinConfig.getTcpIpConfig().setEnabled(true).setMembers(Collections.singletonList("127.0.0.1"));
+	 
+	 List<String> serversList = new ArrayList<String>();
+     serversList.add("periftech1");
+     serversList.add("periftech2");
+	 
+	 joinConfig.getTcpIpConfig().setEnabled(true).setMembers(serversList);
 	 return config;
 	 }
 
