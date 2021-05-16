@@ -90,3 +90,16 @@ Ni las pantallas principales ni el diagrama de navegación han cambiado respecto
 	java -jar ServicioInterno-0.0.1-SNAPSHOT.jar
 
 5.- Acceder a localhost:9090/ y utilizar la aplicación
+
+# FASE 4
+
+## Instrucciones
+Asumiendo que tenemos las imágenes de periftech y servicio-interno (haciendo "docker build -t nombreImagen . " en la correspondiente carpeta /target), sólo tendríamos que ejecutar
+
+	docker-compose up -d
+
+Y ya tendríamos todo lo necesario para utilizar nuestra aplicación desde localhost:8888 (nuestro balanceador)
+
+## Video demo de la web:
+
+https://youtu.be/irz3EYEU4UU
