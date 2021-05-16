@@ -56,8 +56,10 @@ services:
         image: haproxy:1.9.6
         ports: 
             - "8888:80"
+            - "9999:443"
         volumes:
             - "./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+            - "./key/clave.pem:/usr/local/etc/ssl/cert.pem:ro"
         restart: unless-stopped
         networks:
             - periftech-network
